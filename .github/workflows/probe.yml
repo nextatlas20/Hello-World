@@ -1,0 +1,21 @@
+name: probe
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "actor: $GITHUB_ACTOR"
+          echo "--- target repo ---"
+          curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/nextatlas20/Tidebridge-Ferry-Board-426 | head -c 2000
+          echo
+          echo "--- fork probe http status ---"
+          curl -s -o /tmp/fork.out -w "%{http_code}\n" -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/academicpages/academicpages.github.io/forks -d '{"name":"zz-tba426-action-fork"}'
+          cat /tmp/fork.out | head -c 2000
+          echo
